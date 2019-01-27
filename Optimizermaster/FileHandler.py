@@ -98,16 +98,12 @@ class FileHandler:
         temp = struct.unpack('<I',temp1)
         print(temp)
         face_count=temp[0]
-        objects = dict()
-        objects[0] = {"mesh": list(), "normal":list(),"name": "binary file"}
+        objects= {"mesh": list(),"name": "binary file"}
         for idx in range(0, face_count):
             data = struct.unpack("<ffffffffffffH", f.read(50))
-            objects[0]["normal"].append([data[0],data[1],data[2]])
-            objects[0]["normal"].append([data[0],data[1],data[2]])
-            objects[0]["normal"].append([data[0],data[1],data[2]])
-            objects[0]["mesh"].append([data[3], data[4], data[5]])
-            objects[0]["mesh"].append([data[6], data[7], data[8]])
-            objects[0]["mesh"].append([data[9], data[10], data[11]])
+            objects["mesh"].append([data[3], data[4], data[5],data[0],data[1],data[2]])
+            objects["mesh"].append([data[6], data[7], data[8],data[0],data[1],data[2]])
+            objects["mesh"].append([data[9], data[10], data[11],data[0],data[1],data[2]])
         return objects
 
     def write_mesh(self, objects, info, outputfile, output_type="binarystl"):
