@@ -9,12 +9,14 @@ class camera:
         self.mPos=Vector3f(0.0,0.0,0.0)
         self.mViewCenter=Vector3f(0.0,0.0,-1.0)
         self.mUp=Vector3f(0.0,1.0,0.0)
+        self.right=100
+        self.top=100
         self.forwardDir=self.mViewCenter-self.mPos
         self.rithtDir=self.forwardDir.cross(self.mUp)
     def Update(self):
         glMatrixMode(GL_PROJECTION)
         glLoadIdentity()
-        glOrtho(-200,200,-200,200,-200,200)
+        glOrtho(-self.right,self.right,-self.top,self.top,-200,200)
         gluLookAt(self.mPos.X,self.mPos.Y,self.mPos.Z,self.mViewCenter.X,self.mViewCenter.Y,self.mViewCenter.Z,self.mUp.X,self.mUp.Y,self.mUp.Z)
     def Move(self,deltax,deltay):
         self.forwardDir.Normalize()

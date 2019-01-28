@@ -137,8 +137,12 @@ class Light:
         glEnable(GL_LIGHTING)
         glEnable(GL_LIGHT0)   
         glEnable(GL_DEPTH_TEST)
-    def Update(self):
+    def Update(self,m):
         glLight(GL_LIGHT0,GL_POSITION, self.lightpos)
-
+        glMaterial(GL_FRONT,GL_AMBIENT,m['ambient_light'])
+        glMaterial(GL_FRONT,GL_SPECULAR, m['specular'])
+        glMaterial(GL_FRONT,GL_SHININESS, m['shininess'])
+        glMaterial(GL_FRONT,GL_DIFFUSE, m['diffuse'])
+        
     
         
