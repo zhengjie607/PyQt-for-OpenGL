@@ -1,7 +1,5 @@
 from PyQt5.QtWidgets import QOpenGLWidget
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtCore import Qt
 from OpenGL.GL import *
 from OpenGL.arrays import vbo
 from OpenGL.GLU import *
@@ -9,11 +7,7 @@ from OpenGL.GLUT import *
 from Camera import camera
 from Vector3f import *
 from Light import Light,Materials
-from ctypes import sizeof, c_float, c_void_p, c_uint
 from numpy import array
-float_size = sizeof(c_float)
-record_len       = 12 * float_size
-vertex_offset    = c_void_p(0 * float_size)
 class GLWidget(QOpenGLWidget):
     def __init__(self, *args, **kwargs):
         super(GLWidget, self).__init__(*args, **kwargs)
@@ -60,9 +54,9 @@ class GLWidget(QOpenGLWidget):
         #glPopMatrix()
     def mousePressEvent(self,event):
         self.myMousePosition=event.pos()
-        if event.button()==Qt.LeftButton:
+        if event.button()==QtCore.Qt.LeftButton:
             self.isMove=True
-        if event.button()==Qt.RightButton:
+        if event.button()==QtCore.Qt.RightButton:
             self.isRotate=True
         #self.update()
     def wheelEvent(self,event):
@@ -74,9 +68,9 @@ class GLWidget(QOpenGLWidget):
             self.camera.top/=0.95
         self.update()
     def mouseReleaseEvent(self,event):
-        if event.button()==Qt.LeftButton:
+        if event.button()==QtCore.Qt.LeftButton:
             self.isMove=False
-        if event.button()==Qt.RightButton:
+        if event.button()==QtCore.Qt.RightButton:
             self.isRotate=False
     def mouseMoveEvent(self,event):
         if self.isMove:
