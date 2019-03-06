@@ -68,25 +68,15 @@ class FileHandler:
 
     def load_ascii_stl(self, f):
         """Load the content of an ASCII STL file."""
-        objects = dict()
-        part = 0
-        objects[part] = {"mesh": list()}
+        objects= {"mesh": list(),"name": "ascii file"}
+        normal=[]
         for line in f:
             if "vertex" in line:
                 data = line.split()[1:]
-                objects[part]["mesh"].append([float(data[0]), float(data[1]), float(data[2])])
-            if "endsolid" in line:
-                objects[part]["name"] = line.split()[-1]
-                part += 1
-                objects[part] = {"mesh": list()}
-
-        # Delete empty parts:
-        objs = dict()
-        for k, v in objects.items():
-            if len(v["mesh"]) > 3:
-                objs[k] = v
-        return objs
-
+                objects["mesh"].append([float(data[0]), float(data[1]), float(data[2]),float(normal[0]),float(normal[1]),float(normal[2])])
+            if "normal" in line:
+                normal=line.split()[2:]
+        return objects
     def load_binary_stl(self, f):
         """Load the content of a binary STL file."""
         # Skip the header
