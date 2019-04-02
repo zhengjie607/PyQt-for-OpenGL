@@ -14,40 +14,36 @@ class GLWidget(QOpenGLWidget):
         self.setGeometry(QtCore.QRect(10, 10,700, 700))#窗口位置和大小
         self.isMove=False
         self.isRotate=False
-        self.material=Materials['brass']
-        self.data=array([],'f')
+        self.model=[]#该列表需要存储一个一个的字典，字典形式为{'material':Materials,'data':numpy.array()}，每一个model[x]代表一个模型，包含材质和点的数据
     def initdata(self,data):
-        self.data=data
+        self.model=data
     def initializeGL(self):
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
+        glClearColor(1,1,1,0)
         self.camera=camera()
-        self.light=Light(self.material)
+        self.light=Light(Materials[0])
     def paintGL(self):
         self.camera.Update()
-        self.light.Update(self.material)
-        #glutWireTeapot(0.5)
-        if self.data.any()==False:
-            print('mesh is none')
-        else:
-            #pass
-            #self.testdraw()
-            self.VBO()
-    def testdraw(self):
-        glBegin(GL_TRIANGLES)
-        i=0
-        for i in range(0,len(data),3):
-            glNormal3f(normal[i],normal[i+1],normal[i+2])
-            glVertex3f(data[i],data[i+1],data[i+2])
-        glEnd()
-    def VBO(self):
+        for i in range(len(self.model)):
+            #print("Load")
+            glPushMatrix()
+            self.light.Update(self.model[i]['material'])
+            self.VBO(self.model[i]['data'])
+            glPopMatrix()
+    #该函数用来截屏并保存为png图像，glReadPixels的参数以窗体左下角为坐标原点。
+    def geti(self):
+        data = glReadPixels(10, 190, 700, 700, GL_RGBA, GL_UNSIGNED_BYTE)
+        import png
+        png.write(open("screen_shot.png", "wb"), 700, 700, 4, data)
+    def VBO(self,data):
         #glPushMatrix()
-        vb=vbo.VBO(self.data)
+        vb=vbo.VBO(data)
         vb.bind()
         glEnableClientState(GL_NORMAL_ARRAY)
         glEnableClientState(GL_VERTEX_ARRAY)
         glNormalPointer(GL_FLOAT, 24, vb+12)
-        glVertexPointer(3, GL_FLOAT, 24, vb )
-        glDrawArrays(GL_TRIANGLES, 0, len(self.data))
+        glVertexPointer(3, GL_FLOAT, 24, vb )#在每一个周期里，都有6个32-bit浮点数据，总共4*6=24     3代表数量
+        glDrawArrays(GL_TRIANGLES, 0, len(data))
         vb.unbind()
         glDisableClientState(GL_NORMAL_ARRAY)
         glDisableClientState(GL_VERTEX_ARRAY)

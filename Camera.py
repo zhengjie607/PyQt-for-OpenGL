@@ -27,6 +27,7 @@ class camera:
         self.mPos=self.mPos-dx+dy
         self.mViewCenter=self.mPos+self.forwardDir
     def Rotate(self,viewDirection,angle,x,y,z):
+        #x，y，z组成旋转轴
         C=math.cos(angle*math.pi/180)
         S=math.sin(angle*math.pi/180)
         newX=viewDirection.X * (x * x + (1 - x * x) * C) + viewDirection.Y * (x * y * (1 - C) - z * S) + viewDirection.Z * (x * z * (1 - C) + y * S)
