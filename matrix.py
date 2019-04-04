@@ -1,6 +1,6 @@
 import math
 import numpy
-def _rotate_free(angle,initx,inity,initz,axlex,axley,axlez,cenx,ceny,cenz):
+def Matrix_rotate(angle,axlex,axley,axlez,cenx,ceny,cenz):
     C=math.cos(angle*math.pi/180)
     S=math.sin(angle*math.pi/180)
     M0=axlex*axlex+(1-axlex*axlex)*C
@@ -15,23 +15,49 @@ def _rotate_free(angle,initx,inity,initz,axlex,axley,axlez,cenx,ceny,cenz):
     M9=axlez*axley*(1-C)+axlex*S
     M10=axlez*axlez+(1-axlez*axlez)*C
     M11=(1-C)*(1-axlez*axlez)*cenz-(axlex*axlez-axlex*axlez*C-axley*S)*cenx-(axley*axlez-axley*axlez*C+axlex*S)*ceny
-    newx=M0*initx+M1*inity+M2*initz+M3
-    newy=M4*initx+M5*inity+M6*initz+M7
-    newz=M8*initx+M9*inity+M10*initz+M11
-    return newx,newy,newz
-def rotate(data,angle,x=0,y=0,z=0):
+    return numpy.matrix([[M0,M1,M2,M3],[M4,M5,M6,M7],[M8,M9,M10,M11],[0,0,0,1]])
+def Matrix_scale(scale_x,scale_y,scale_z,cenx,ceny,cenz):
+    M00=scale_x
+    M03=(1-scale_x)*cenx
+    M11=scale_y
+    M13=(1-scale_y)*ceny
+    M22=scale_z
+    M23=(1-scale_z)*cenz
+    return numpy.matrix([[M00,0,0,M03],[0,M11,0,M13],[0,0,M22,M23],[0,0,0,1]])
+def Matrix_translate(move_x,move_y,move_z):
+    return numpy.matrix([[1,0,0,move_x],[0,1,0,move_y],[0,0,1,move_z],[0,0,0,1]])
+def getCenter(data):
     Xmax,Ymax,Zmax,_,_,_=data.max(axis=0)
     Xmin,Ymin,Zmin,_,_,_=data.min(axis=0)
     cenx=(Xmax+Xmin)/2
     ceny=(Ymax+Ymin)/2
     cenz=(Zmax+Zmin)/2
+    return cenx,ceny,cenz
+def M_dot_data(data,M):
+    point=numpy.matrix(data[:,0:4])
+    point[:,3]=1
+    point=point.T
+    b=numpy.dot(M,point)
+    data[:,0:3]=b.T[:,0:3]
+def rotate(data,angle,x=0,y=0,z=0):
+    cenx,ceny,cenz=getCenter(data)
     h=math.sqrt(x**2+y**2+z**2)
     x=x/h
     y=y/h
     z=z/h
-    for i in range(len(data)):
-        data[i][0],data[i][1],data[i][2]=_rotate_free(angle,data[i][0],data[i][1],data[i][2],x,y,z,cenx,ceny,cenz)
-        #data[i][3],data[i][4],data[i][5]=_rotate_free(-angle,data[i][3],data[i][4],data[i][5],x,y,z,cenx,ceny,cenz)
-def translate(data,mx,my,mz):
-    for i in range(len(data)):
-        data[i][0],data[i][1],data[i][2]=data[i][0]+mx,data[i][1]+my,data[i][2]+mz
+    M=Matrix_rotate(angle,x,y,z,cenx,ceny,cenz)
+    M_dot_data(data,M)
+    M_normal=Matrix_rotate(angle,x,y,z,0,0,0)
+    normal=numpy.matrix(data[:,2:])
+    normal[:,0:3]=normal[:,1:]
+    normal[:,3]=1
+    normal=normal.T
+    c=numpy.dot(M_normal,normal)
+    data[:,3:]=c.T[:,0:3]
+def scale(data,scale_x,scale_y,scale_z):
+    cenx,ceny,cenz=getCenter(data)
+    M=Matrix_scale(scale_x.scale_y,scale_z,cenx,ceny,cenz)
+    M_dot_data(data,M)
+def translate(data,movex,movey,movez):
+    M=Matrix_translate(movex,movey,movez)
+    M_dot_data(data,M)
