@@ -34,11 +34,10 @@ def getCenter(data):
     cenz=(Zmax+Zmin)/2
     return cenx,ceny,cenz
 def M_dot_data(data,M):
-    point=numpy.matrix(data[:,0:4])
-    point[:,3]=1
-    point=point.T
-    b=numpy.dot(M,point)
-    data[:,0:3]=b.T[:,0:3]
+    point=numpy.matrix(data[:,0:3])
+    point=numpy.insert(point,3,1,axis=1)
+    b=numpy.dot(point,M.T)
+    data[:,0:3]=b[:,0:3]
 def rotate(data,angle,x=0,y=0,z=0):
     cenx,ceny,cenz=getCenter(data)
     h=math.sqrt(x**2+y**2+z**2)
@@ -48,12 +47,10 @@ def rotate(data,angle,x=0,y=0,z=0):
     M=Matrix_rotate(angle,x,y,z,cenx,ceny,cenz)
     M_dot_data(data,M)
     M_normal=Matrix_rotate(angle,x,y,z,0,0,0)
-    normal=numpy.matrix(data[:,2:])
-    normal[:,0:3]=normal[:,1:]
-    normal[:,3]=1
-    normal=normal.T
-    c=numpy.dot(M_normal,normal)
-    data[:,3:]=c.T[:,0:3]
+    normal=numpy.matrix(data[:,3:])
+    normal=numpy.insert(normal,3,1,axis=1)
+    c=numpy.dot(normal,M_normal.T)
+    data[:,3:]=c[:,0:3]
 def scale(data,scale_x,scale_y,scale_z):
     cenx,ceny,cenz=getCenter(data)
     M=Matrix_scale(scale_x.scale_y,scale_z,cenx,ceny,cenz)
